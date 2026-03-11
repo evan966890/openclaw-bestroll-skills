@@ -1,0 +1,4 @@
+interface:
+  display_name: "高管画像初始化"
+  short_description: "用分组问卷生成共享 USER.md/MEMORY.md"
+  default_prompt: "请引导我完成高管画像初始化问卷，并生成 USER.md 与 MEMORY.md 预览。"

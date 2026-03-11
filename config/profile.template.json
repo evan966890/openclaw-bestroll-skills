@@ -1,0 +1,40 @@
+{
+  "basic": {
+    "name": "",
+    "callName": "",
+    "title": "总经理",
+    "department": "",
+    "industryFocus": ""
+  },
+  "communication": {
+    "style": "",
+    "replyLength": "",
+    "formats": [],
+    "annoyances": [],
+    "annoyancesOther": "",
+    "language": "中文为主，专业术语保留 English"
+  },
+  "decision": {
+    "frameworks": [],
+    "habits": ""
+  },
+  "stakeholders": [
+    {
+      "name": "",
+      "role": "",
+      "note": ""
+    }
+  ],
+  "priorities": [],
+  "sensitivities": "",
+  "knowledge": {
+    "interests": [],
+    "interestsOther": "",
+    "pushMode": "",
+    "pushFrequency": "",
+    "pushTime": "",
+    "pushCount": "",
+    "contentLanguage": "",
+    "studyHabits": ""
+  }
+}

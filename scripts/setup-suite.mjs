@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+import path from "node:path";
+import process from "node:process";
+import { spawn } from "node:child_process";
+import { repoRootFromImport, parseArgs } from "../lib/node-helpers.mjs";
+
+async function runStep(scriptName, argv) {
+  const repoRoot = repoRootFromImport(import.meta.url);
+  const scriptPath = path.join(repoRoot, "scripts", scriptName);
+  await new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [scriptPath, ...argv], {
+      stdio: "inherit",
+    });
+    child.on("exit", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      reject(new Error(`${scriptName} exited with code ${code}`));
+    });
+    child.on("error", reject);
+  });
+}
+
+async function main() {
+  const rawArgs = process.argv.slice(2);
+  const args = parseArgs(rawArgs);
+
+  if (!args.skipProvision) {
+    await runStep("provision-feishu-bots.mjs", rawArgs);
+  }
+
+  if (!args.skipConfigure) {
+    await runStep("configure-openclaw-suite.mjs", rawArgs);
+  }
+}
+
+await main();
