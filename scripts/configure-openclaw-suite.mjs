@@ -44,6 +44,13 @@ function defaultAccountsFallback() {
   };
 }
 
+function parseCsvArg(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 async function copyFileIfNeeded(sourcePath, targetPath, overwrite = false) {
   if (!overwrite && (await fileExists(targetPath))) {
     return;
@@ -142,6 +149,15 @@ async function installWorkspaceTemplates(repoRoot, suiteRoot, sharedRoot, args) 
   }
 }
 
+async function installSkillDir(sourceDir, targetRoot) {
+  const resolvedSource = path.resolve(resolveHomePath(sourceDir));
+  const skillName = path.basename(resolvedSource);
+  const targetDir = path.join(targetRoot, skillName);
+  await fs.rm(targetDir, { recursive: true, force: true });
+  await copyDirRecursive(resolvedSource, targetDir);
+  return { skillName, sourceDir: resolvedSource, targetDir };
+}
+
 function mergeAgentEntries(config, openclawHome, suiteRoot) {
   const list = Array.isArray(config.agents?.list) ? [...config.agents.list] : [];
   for (const spec of AGENT_SPECS) {
@@ -192,6 +208,7 @@ async function main() {
   const accountsPath = path.resolve(repoRoot, args.accounts ? resolveHomePath(args.accounts) : DEFAULT_FEISHU_ACCOUNTS_FILE);
   const skillSourceDir = path.join(repoRoot, "templates", "skills", "executive-profile-onboarding");
   const skillTargetDir = path.join(openclawHome, "skills", "executive-profile-onboarding");
+  const extraSkillInputs = parseCsvArg(args.extraSkills);
 
   const config = await readJson(configPath);
   const accountsData = (await readJsonIfExists(accountsPath, dryRun ? defaultAccountsFallback() : null))
@@ -239,6 +256,7 @@ async function main() {
     configPath,
     accountsPath,
     skillTargetDir,
+    extraSkills: extraSkillInputs,
     agents: AGENT_SPECS.map((spec) => ({
       id: spec.id,
       workspace: path.join(suiteRoot, "agents", spec.workspaceDirName),
@@ -256,6 +274,16 @@ async function main() {
   await ensureDir(path.dirname(skillTargetDir));
   await fs.rm(skillTargetDir, { recursive: true, force: true });
   await copyDirRecursive(skillSourceDir, skillTargetDir);
+  const installedExtraSkills = [];
+  if (extraSkillInputs.length) {
+    const extraSkillRoot = path.join(openclawHome, "skills");
+    await ensureDir(extraSkillRoot);
+    for (const skillInput of extraSkillInputs) {
+      const repoRelativeSource = path.join(repoRoot, skillInput);
+      const sourceDir = (await fileExists(repoRelativeSource)) ? repoRelativeSource : skillInput;
+      installedExtraSkills.push(await installSkillDir(sourceDir, extraSkillRoot));
+    }
+  }
 
   for (const spec of AGENT_SPECS) {
     await seedAgentState(openclawHome, spec.id);
@@ -275,6 +303,11 @@ async function main() {
   console.log(`Suite installed to ${suiteRoot}`);
   console.log(`OpenClaw config updated: ${configPath}`);
   console.log(`Backup saved to ${backupPath}`);
+  if (installedExtraSkills.length) {
+    for (const skill of installedExtraSkills) {
+      console.log(`Extra skill installed: ${skill.skillName} -> ${skill.targetDir}`);
+    }
+  }
 }
 
 await main();

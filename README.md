@@ -15,6 +15,7 @@
 
 ## 目录
 
+- `AI_PROMPT.md`：给本地 AI 的执行提示
 - `apps/questionnaire/`：纯前端单页问卷
 - `lib/`：问卷字段、Markdown 生成器、suite 清单、Node 辅助函数
 - `scripts/`：问卷预览、飞书建 bot、OpenClaw 注入、一键安装
@@ -89,6 +90,7 @@ npm run configure:openclaw
 npm run configure:openclaw -- --profile-json /path/to/profile.json
 npm run configure:openclaw -- --accounts .state/feishu-accounts.json
 npm run configure:openclaw -- --suite-root ~/.openclaw/executive-feishu-suite
+npm run configure:openclaw -- --extra-skills /abs/path/to/skillA,/abs/path/to/skillB
 npm run configure:openclaw -- --dry-run
 ```
 
