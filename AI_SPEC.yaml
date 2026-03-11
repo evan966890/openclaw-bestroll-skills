@@ -1,0 +1,285 @@
+version: 1
+mode: strict_copy_and_configure
+repo_contract:
+  repo_name: tianyuan
+  repo_root_required_files:
+    - AI_PROMPT.md
+    - AI_SPEC.yaml
+    - README.md
+    - AGENTS.md
+    - package.json
+    - scripts/provision-feishu-bots.mjs
+    - scripts/configure-openclaw-suite.mjs
+  runtime_secret_paths_do_not_commit:
+    - .state/feishu-accounts.json
+    - .state/feishu-artifacts/
+    - .state/feishu-browser-profile/
+
+objective:
+  install_four_agents_into_openclaw: true
+  install_shared_onboarding_skill: true
+  support_extra_skills_install: true
+  first_dm_must_start_with_interactive_onboarding_when_user_pending: true
+  prevent_duplicate_feishu_apps: true
+  canonical_feishu_bot_names:
+    strategist: 商业参谋
+    chief_of_staff: 效率管家
+    life_concierge: 生活助理
+    second_brain: 知识管家
+
+host_assumptions:
+  os: any_desktop_with_node_and_openclaw
+  node: ">=20"
+  browser_one_of:
+    - Chrome
+    - Edge
+    - Brave
+    - Chromium
+  openclaw_home: ~/.openclaw
+  if_openclaw_config_missing: create_minimal_config_then_continue
+
+execution_order:
+  - npm install
+  - npm run provision:feishu
+  - npm run configure:openclaw
+
+commands:
+  default:
+    install_deps: npm install
+    provision_feishu: npm run provision:feishu
+    configure_suite: npm run configure:openclaw
+  with_profile_json:
+    configure_suite: npm run configure:openclaw -- --profile-json /abs/path/to/profile.json
+  with_extra_skills:
+    configure_suite: npm run configure:openclaw -- --extra-skills /abs/path/to/skillA,/abs/path/to/skillB
+  dry_run:
+    configure_suite: npm run configure:openclaw -- --dry-run
+
+copy_plan:
+  suite_root: ~/.openclaw/executive-feishu-suite
+  shared_root: ~/.openclaw/executive-feishu-suite/shared
+  agent_roots:
+    strategist: ~/.openclaw/executive-feishu-suite/agents/strategist
+    chief_of_staff: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff
+    life_concierge: ~/.openclaw/executive-feishu-suite/agents/life-concierge
+    second_brain: ~/.openclaw/executive-feishu-suite/agents/second-brain
+  shared_files:
+    - source: shared-profile/USER.md
+      target: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      content_rule: copy_exact
+    - source: shared-profile/MEMORY.md
+      target: ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+      content_rule: copy_exact
+    - source: shared-profile/TOOLS.md
+      target: ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+      content_rule: copy_exact
+    - source: shared-profile/radar/INTERESTS.md
+      target: ~/.openclaw/executive-feishu-suite/shared/radar/INTERESTS.md
+      content_rule: copy_exact
+  per_agent_files:
+    strategist:
+      - source: templates/agents/strategist/AGENTS.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/AGENTS.md
+      - source: templates/agents/strategist/BOOTSTRAP.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/BOOTSTRAP.md
+      - source: templates/agents/strategist/HEARTBEAT.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/HEARTBEAT.md
+      - source: templates/agents/strategist/IDENTITY.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/IDENTITY.md
+      - source: templates/agents/strategist/SOUL.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/SOUL.md
+      - source: templates/agents/strategist/briefings/README.md
+        target: ~/.openclaw/executive-feishu-suite/agents/strategist/briefings/README.md
+    chief_of_staff:
+      - source: templates/agents/chief-of-staff/AGENTS.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/AGENTS.md
+      - source: templates/agents/chief-of-staff/BOOTSTRAP.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/BOOTSTRAP.md
+      - source: templates/agents/chief-of-staff/HEARTBEAT.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/HEARTBEAT.md
+      - source: templates/agents/chief-of-staff/IDENTITY.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/IDENTITY.md
+      - source: templates/agents/chief-of-staff/SOUL.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/SOUL.md
+      - source: templates/agents/chief-of-staff/actions/README.md
+        target: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/actions/README.md
+    life_concierge:
+      - source: templates/agents/life-concierge/AGENTS.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/AGENTS.md
+      - source: templates/agents/life-concierge/BOOTSTRAP.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/BOOTSTRAP.md
+      - source: templates/agents/life-concierge/HEARTBEAT.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/HEARTBEAT.md
+      - source: templates/agents/life-concierge/IDENTITY.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/IDENTITY.md
+      - source: templates/agents/life-concierge/SOUL.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/SOUL.md
+      - source: templates/agents/life-concierge/arrangements/README.md
+        target: ~/.openclaw/executive-feishu-suite/agents/life-concierge/arrangements/README.md
+    second_brain:
+      - source: templates/agents/second-brain/AGENTS.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/AGENTS.md
+      - source: templates/agents/second-brain/BOOTSTRAP.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/BOOTSTRAP.md
+      - source: templates/agents/second-brain/HEARTBEAT.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/HEARTBEAT.md
+      - source: templates/agents/second-brain/IDENTITY.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/IDENTITY.md
+      - source: templates/agents/second-brain/SOUL.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/SOUL.md
+      - source: templates/agents/second-brain/notes/INDEX.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/notes/INDEX.md
+      - source: templates/agents/second-brain/radar/README.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/radar/README.md
+      - source: templates/agents/second-brain/skills/interest-profiling/SKILL.md
+        target: ~/.openclaw/executive-feishu-suite/agents/second-brain/skills/interest-profiling/SKILL.md
+  symlink_plan:
+    strategist:
+      USER.md: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      MEMORY.md: ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+      TOOLS.md: ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+    chief_of_staff:
+      USER.md: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      MEMORY.md: ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+      TOOLS.md: ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+    life_concierge:
+      USER.md: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      MEMORY.md: ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+      TOOLS.md: ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+    second_brain:
+      USER.md: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      MEMORY.md: ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+      TOOLS.md: ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+      radar/INTERESTS.md: ~/.openclaw/executive-feishu-suite/shared/radar/INTERESTS.md
+  generated_files:
+    - target_pattern: ~/.openclaw/executive-feishu-suite/agents/*/memory/YYYY-MM-DD.md
+      content_rule: |
+        # YYYY-MM-DD
+
+        - Status: initialized
+        - Notes:
+          - [待补充]
+      create_for:
+        - today
+        - yesterday
+
+skill_install_plan:
+  built_in_skill:
+    source: templates/skills/executive-profile-onboarding
+    target: ~/.openclaw/skills/executive-profile-onboarding
+    install_rule: copy_directory_replace_existing
+    built_in_skill_files:
+      - source: templates/skills/executive-profile-onboarding/SKILL.md
+        target: ~/.openclaw/skills/executive-profile-onboarding/SKILL.md
+      - source: templates/skills/executive-profile-onboarding/agents/openai.yaml
+        target: ~/.openclaw/skills/executive-profile-onboarding/agents/openai.yaml
+      - source: templates/skills/executive-profile-onboarding/references/questionnaire-groups.md
+        target: ~/.openclaw/skills/executive-profile-onboarding/references/questionnaire-groups.md
+      - source: templates/skills/executive-profile-onboarding/references/output-contract.md
+        target: ~/.openclaw/skills/executive-profile-onboarding/references/output-contract.md
+      - source: templates/skills/executive-profile-onboarding/scripts/render_profile.mjs
+        target: ~/.openclaw/skills/executive-profile-onboarding/scripts/render_profile.mjs
+  extra_skills:
+    input_flag: --extra-skills
+    input_format: comma_separated_absolute_or_repo_relative_skill_directories
+    target_root: ~/.openclaw/skills
+    install_rule: for_each_source_copy_directory_to_target_root_using_basename
+
+first_dm_rules:
+  activation_condition:
+    shared_user_md_contains: "<!-- executive-profile-status: pending -->"
+  greetings:
+    strategist: "我是商业参谋。先用几组简短问题完成共享画像初始化，完成后我再进入业务分析模式。先告诉我你的姓名，以及希望我怎么称呼你。"
+    chief_of_staff: "我是效率管家。先用几组简短问题完成共享画像初始化，完成后我再进入日程与跟进模式。先告诉我你的姓名，以及希望我怎么称呼你。"
+    life_concierge: "我是生活助理。先用几组简短问题完成共享画像初始化，完成后我再进入生活安排模式。先告诉我你的姓名，以及希望我怎么称呼你。"
+    second_brain: "我是知识管家。先用几组简短问题完成共享画像初始化，完成后我再进入知识雷达与归档模式。先告诉我你的姓名，以及希望我怎么称呼你。"
+  onboarding_skill_required: executive-profile-onboarding
+  onboarding_output_files:
+    - ~/.openclaw/executive-feishu-suite/shared/USER.md
+    - ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+    - ~/.openclaw/executive-feishu-suite/shared/radar/INTERESTS.md
+
+openclaw_config_rules:
+  target: ~/.openclaw/openclaw.json
+  if_missing_create_object:
+    auth: {}
+    models: {}
+    agents:
+      defaults: {}
+      list: []
+    tools: {}
+    commands: {}
+    channels: {}
+    gateway: {}
+    plugins: {}
+    meta: {}
+    bindings: []
+  required_mutations:
+    channels.feishu.enabled: true
+    channels.feishu.connectionMode: websocket
+    channels.feishu.dmPolicy: open
+    channels.feishu.allowFrom:
+      - "*"
+    channels.feishu.accounts.must_contain:
+      - strategist
+      - chief-of-staff
+      - life-concierge
+      - second-brain
+    agents.list.must_contain_ids:
+      - strategist
+      - chief-of-staff
+      - life-concierge
+      - second-brain
+    bindings.must_contain:
+      - agentId: strategist
+        match:
+          channel: feishu
+          accountId: strategist
+      - agentId: chief-of-staff
+        match:
+          channel: feishu
+          accountId: chief-of-staff
+      - agentId: life-concierge
+        match:
+          channel: feishu
+          accountId: life-concierge
+      - agentId: second-brain
+        match:
+          channel: feishu
+          accountId: second-brain
+
+feishu_provision_rules:
+  create_script: scripts/provision-feishu-bots.mjs
+  must_dedupe_before_create: true
+  local_state_file: .state/feishu-accounts.json
+  dedupe_priority:
+    - exact_same_name_reuse
+    - legacy_openclaw_prefixed_name_abort
+    - only_if_no_match_create_new
+  output_accounts_required:
+    - strategist
+    - chief-of-staff
+    - life-concierge
+    - second-brain
+
+verify:
+  file_exists:
+    - ~/.openclaw/executive-feishu-suite/shared/USER.md
+    - ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
+    - ~/.openclaw/executive-feishu-suite/shared/TOOLS.md
+    - ~/.openclaw/skills/executive-profile-onboarding/SKILL.md
+    - ~/.openclaw/executive-feishu-suite/agents/strategist/BOOTSTRAP.md
+    - ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/BOOTSTRAP.md
+    - ~/.openclaw/executive-feishu-suite/agents/life-concierge/BOOTSTRAP.md
+    - ~/.openclaw/executive-feishu-suite/agents/second-brain/BOOTSTRAP.md
+  file_contains:
+    - path: ~/.openclaw/executive-feishu-suite/shared/USER.md
+      needle: "<!-- executive-profile-status: pending -->"
+    - path: ~/.openclaw/executive-feishu-suite/agents/strategist/BOOTSTRAP.md
+      needle: "我是商业参谋。先用几组简短问题完成共享画像初始化"
+    - path: ~/.openclaw/executive-feishu-suite/agents/chief-of-staff/BOOTSTRAP.md
+      needle: "我是效率管家。先用几组简短问题完成共享画像初始化"
+    - path: ~/.openclaw/executive-feishu-suite/agents/life-concierge/BOOTSTRAP.md
+      needle: "我是生活助理。先用几组简短问题完成共享画像初始化"
+    - path: ~/.openclaw/executive-feishu-suite/agents/second-brain/BOOTSTRAP.md
+      needle: "我是知识管家。先用几组简短问题完成共享画像初始化"

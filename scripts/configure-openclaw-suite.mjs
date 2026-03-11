@@ -44,6 +44,24 @@ function defaultAccountsFallback() {
   };
 }
 
+function defaultOpenClawConfig() {
+  return {
+    auth: {},
+    models: {},
+    agents: {
+      defaults: {},
+      list: [],
+    },
+    tools: {},
+    commands: {},
+    channels: {},
+    gateway: {},
+    plugins: {},
+    meta: {},
+    bindings: [],
+  };
+}
+
 function parseCsvArg(value) {
   return String(value || "")
     .split(",")
@@ -210,7 +228,7 @@ async function main() {
   const skillTargetDir = path.join(openclawHome, "skills", "executive-profile-onboarding");
   const extraSkillInputs = parseCsvArg(args.extraSkills);
 
-  const config = await readJson(configPath);
+  const config = (await readJsonIfExists(configPath, null)) ?? defaultOpenClawConfig();
   const accountsData = (await readJsonIfExists(accountsPath, dryRun ? defaultAccountsFallback() : null))
     ?? defaultAccountsFallback();
 
@@ -244,6 +262,7 @@ async function main() {
 
   nextConfig.channels.feishu.defaultAccount ??= Object.keys(nextConfig.channels.feishu.accounts)[0];
   nextConfig.agents ??= {};
+  nextConfig.agents.defaults ??= {};
   nextConfig.agents.list = mergeAgentEntries(nextConfig, openclawHome, suiteRoot);
   nextConfig.bindings = mergeBindings(nextConfig);
   nextConfig.meta = {
@@ -292,7 +311,11 @@ async function main() {
   const backupDir = path.join(repoRoot, ".state", "openclaw-backups");
   const backupPath = path.join(backupDir, `openclaw.${new Date().toISOString().replace(/[:.]/g, "-")}.json`);
   await ensureDir(backupDir);
-  await copyFile(configPath, backupPath);
+  if (await fileExists(configPath)) {
+    await copyFile(configPath, backupPath);
+  } else {
+    await writeJson(backupPath, config);
+  }
   await writeJson(configPath, nextConfig);
 
   const currentTools = await readTextIfExists(path.join(sharedRoot, "TOOLS.md"));
