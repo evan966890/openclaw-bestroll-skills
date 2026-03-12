@@ -1,0 +1,5 @@
+interface:
+  display_name: "闭环追踪"
+  short_description: "把纪要和聊天记录提取成 owner/deadline 闭环清单"
+  default_prompt: "请把这段材料提取成标准行动项，明确 owner、deadline、阻塞和下一步。"
+

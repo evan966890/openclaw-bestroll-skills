@@ -1,0 +1,5 @@
+interface:
+  display_name: "信源分诊"
+  short_description: "先判可信度，再判值不值得推送、归档或深挖"
+  default_prompt: "请帮我判断这条信息的可信度、相关性和建议动作。"
+

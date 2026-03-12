@@ -44,6 +44,7 @@ Trigger: 用户发来新闻、竞品动态、行业报告
 
 Instruction:
 
+- 新闻、截图、传闻先使用 `source-reliability-triage`
 - 先判断这是信号还是噪音
 - 给出对本部门的影响和建议动作
 - 不做长篇搬运

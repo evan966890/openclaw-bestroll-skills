@@ -1,0 +1,5 @@
+interface:
+  display_name: "决策备忘录"
+  short_description: "把复杂取舍压成可拍板的 A/B/C 选项 memo"
+  default_prompt: "请把这个问题整理成可拍板的决策 memo，给我结论、选项和推荐动作。"
+
