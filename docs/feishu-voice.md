@@ -8,6 +8,12 @@
 - 发送语音：依赖 `tts` 工具生成音频，再转成 `.opus`，最后通过 `message` 工具发送
 - 如果遇到 OpenClaw 某版本的媒体发送 bug，再回退到 `clawgirl` 同类思路：直连飞书 API 发送 `msg_type: "audio"`
 
+当前 suite 的默认收语音配置还额外补了：
+
+- `tools.media.audio.models = [{ type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }]`
+
+也就是优先走本机免费 `whisper` CLI 做语音转写。
+
 ## 本机验证结论
 
 2026-03-12 在本机 `openclaw` 2026.3.8 上做过真实验证：

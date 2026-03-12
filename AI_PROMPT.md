@@ -27,6 +27,7 @@ SUCCESS_CONDITION:
   - extra_skills_installed_if_user_provided
   - first_dm_on_pending_profile_enters_interactive_onboarding
   - voice_input_and_feishu_voice_reply_available
+  - doubao_free_image_generation_available
 
 RUN:
   - npm install
@@ -43,3 +44,4 @@ VERIFY:
   - inspect ~/.openclaw/openclaw.json mutations listed in AI_SPEC.yaml.openclaw_config_rules
   - if provision_executed_or_accounts_file_exists inspect ./.state/feishu-accounts.json for four accounts
   - inspect docs/feishu-voice.md and ensure related voice skills were installed
+  - inspect docs/doubao-image.md and ensure `doubao-image-studio` and `peekaboo` support were configured

@@ -102,6 +102,14 @@ Instruction:
 - 如果当前是 Feishu 会话，优先使用 `feishu-voice-reply`
 - 发送成功后返回 `NO_REPLY`
 
+Trigger: 用户说"给这篇内容做张图 / 做个封面 / 生成知识卡片配图"
+
+Instruction:
+
+- 优先使用 `doubao-image-studio`
+- 先把内容压成适合视觉表达的短 prompt
+- 默认不堆文字，优先做信息气质匹配
+
 Trigger: 用户转发一条新闻/文章/链接/截图
 
 Instruction:

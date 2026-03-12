@@ -7,12 +7,13 @@
 - 生活助理 `life-concierge`
 - 知识管家 `second-brain`
 
-仓库同时包含四类能力：
+仓库同时包含五类能力：
 
 1. 4 个 agent 的完整 workspace 模板
 2. 高管画像问卷与 `USER.md` / `MEMORY.md` / `radar/INTERESTS.md` 生成器
 3. 读取 ClawMom 飞书自动化脚本后封装的一键建 bot + OpenClaw 配置注入脚本
 4. 语音输入 / 飞书语音回复技能与对应配置
+5. 复用用户 cookie 的豆包免费生图能力
 
 ## 目录
 
@@ -23,6 +24,7 @@
 - `lib/`：问卷字段、Markdown 生成器、suite 清单、Node 辅助函数
 - `scripts/`：问卷预览、飞书建 bot、OpenClaw 注入、一键安装
 - `docs/feishu-voice.md`：飞书语音能力说明与验证结论
+- `docs/doubao-image.md`：豆包免费生图与 cookie 复用说明
 - `skills/`：仓库内置的全局技能
 - `shared-profile/`：共享 `USER.md` / `MEMORY.md` / `TOOLS.md` 初始模板
 - `templates/agents/`：4 个 agent 的独立文件模板
@@ -97,7 +99,9 @@ npm run configure:openclaw
 - 为飞书补默认消息防抖与队列配置
 - 启用 Feishu 插件，并写入当前版本兼容的多账号 schema
 - 为入站语音补 `tools.media.audio.enabled = true`
+- 为入站语音补本地 `whisper` CLI 转写模型
 - 为语音回复补 `messages.tts` 默认配置（默认不自动发语音）
+- 为本地 UI 自动化放行 bundled `peekaboo`
 - 如果当前配置里有旧的 `meta.lastExecutiveSuiteSyncAt`，会自动移除
 - 增量更新 `~/.openclaw/openclaw.json`
 - 为 4 个 Feishu account 建立 `bindings`
@@ -144,6 +148,7 @@ npm run install:skills
 - `executive-profile-onboarding`
 - `board-brief-builder`
 - `decision-options-memo`
+- `doubao-image-studio`
 - `meeting-prep-pack`
 - `action-closure-tracker`
 - `executive-travel-desk`
@@ -174,6 +179,29 @@ npm run install:skills
 - 本地文件要放到 `~/.openclaw/media/` 或允许目录
 - 不要跨 app 复用旧 `open_id`
 - 当前仓库也内置了 `clawgirl` 同类回退脚本，可在 OpenClaw 媒体发送异常时继续发飞书原生语音
+
+收语音默认走免费本地链路：
+
+- Feishu 入站 `audio` 会先下载为本地媒体
+- `tools.media.audio.models` 默认补本机 `whisper` CLI
+- agent 拿到 transcript 后再继续走 `voice-note-intake`
+
+## 免费生图
+
+仓库现在内置 `doubao-image-studio`：
+
+- 第一次：让用户自己在原浏览器里扫码登录豆包
+- 第二次：关闭用户浏览器，把用户 profile/cookie 同步到 OpenClaw Browser
+- 之后：由 OpenClaw Browser 驱动豆包 Web 生图
+- 回退：如果 CDP 页面状态不稳，就用 `peekaboo`
+
+初始化命令：
+
+```bash
+npm run bootstrap:doubao-cookie -- --source-browser chrome --source-profile Default --target-profile openclaw
+```
+
+详细约束见 [docs/doubao-image.md](docs/doubao-image.md)。
 
 ## 首次初始化方式
 

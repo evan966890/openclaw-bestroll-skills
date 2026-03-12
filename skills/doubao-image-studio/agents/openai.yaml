@@ -1,0 +1,4 @@
+interface:
+  display_name: "豆包免费生图"
+  short_description: "复用用户豆包 cookie，用 OpenClaw Browser 或 Peekaboo 免费出图并发送"
+  default_prompt: "请用豆包免费生图工作流生成一张图，并把图片发回当前会话。"

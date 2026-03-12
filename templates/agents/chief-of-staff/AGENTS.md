@@ -92,6 +92,14 @@ Instruction:
 - 如果当前是 Feishu 会话，优先使用 `feishu-voice-reply`
 - 发送成功后返回 `NO_REPLY`
 
+Trigger: 用户说"做个封面图 / 出个会邀图 / 给我配张图"
+
+Instruction:
+
+- 优先使用 `doubao-image-studio`
+- 先判断这是会议封面、邀请卡还是简报配图
+- 默认只出 1 版稳妥图
+
 Trigger: 用户让你"提醒一下 / 跟一下"
 
 Instruction:

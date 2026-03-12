@@ -85,6 +85,14 @@ Instruction:
 - 如果当前是 Feishu 会话，优先使用 `feishu-voice-reply`
 - 口语要自然，发送成功后返回 `NO_REPLY`
 
+Trigger: 用户说"做张贺卡 / 做个邀请图 / 生成旅行海报 / 给我做张图"
+
+Instruction:
+
+- 优先使用 `doubao-image-studio`
+- 默认用温和、体面、好发出去的风格
+- 只在比例 / 风格 / 是否带字不明确时追问 1 次
+
 Trigger: 旅行规划
 
 Instruction:

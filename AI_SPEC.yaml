@@ -201,6 +201,7 @@ skill_install_plan:
       - board-brief-builder
       - care-companion
       - decision-options-memo
+      - doubao-image-studio
       - executive-travel-desk
       - feishu-voice-reply
       - fun-feed
@@ -258,6 +259,13 @@ openclaw_config_rules:
   required_mutations:
     tools.profile: full
     tools.media.audio.enabled: true
+    tools.media.audio.models:
+      - type: cli
+        command: whisper
+        args:
+          - --model
+          - base
+          - "{{MediaPath}}"
     messages.queue.mode: collect
     messages.queue.debounceMs: 2000
     messages.queue.cap: 20
@@ -282,6 +290,9 @@ openclaw_config_rules:
     plugins.entries.feishu.enabled: true
     gateway.mode: local
     gateway.bind: loopback
+    skills.allowBundled:
+      - peekaboo
+    skills.entries.peekaboo.enabled: true
     agents.list.must_contain_ids:
       - strategist
       - chief-of-staff
@@ -328,6 +339,7 @@ verify:
     - ~/.openclaw/skills/board-brief-builder/SKILL.md
     - ~/.openclaw/skills/care-companion/SKILL.md
     - ~/.openclaw/skills/decision-options-memo/SKILL.md
+    - ~/.openclaw/skills/doubao-image-studio/SKILL.md
     - ~/.openclaw/skills/executive-travel-desk/SKILL.md
     - ~/.openclaw/skills/feishu-voice-reply/SKILL.md
     - ~/.openclaw/skills/fun-feed/SKILL.md
@@ -339,6 +351,7 @@ verify:
     - ~/.openclaw/skills/voice-note-intake/SKILL.md
     - ~/.openclaw/skills/xiaomi-sentinel/SKILL.md
     - ./docs/feishu-voice.md
+    - ./docs/doubao-image.md
     - ~/.openclaw/executive-feishu-suite/shared/USER.md
     - ~/.openclaw/executive-feishu-suite/shared/MEMORY.md
     - ~/.openclaw/executive-feishu-suite/shared/TOOLS.md

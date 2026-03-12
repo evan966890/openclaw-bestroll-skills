@@ -112,6 +112,15 @@ function ensureVoiceSupport(nextConfig) {
     maxBytes: nextConfig.tools.media.audio?.maxBytes ?? 20 * 1024 * 1024,
     echoTranscript: nextConfig.tools.media.audio?.echoTranscript ?? false,
   };
+  if (!Array.isArray(nextConfig.tools.media.audio.models) || nextConfig.tools.media.audio.models.length === 0) {
+    nextConfig.tools.media.audio.models = [
+      {
+        type: "cli",
+        command: "whisper",
+        args: ["--model", "base", "{{MediaPath}}"],
+      },
+    ];
+  }
 
   nextConfig.messages ??= {};
   nextConfig.messages.tts = {
@@ -123,6 +132,18 @@ function ensureVoiceSupport(nextConfig) {
       ...(nextConfig.messages.tts?.edge ?? {}),
       enabled: nextConfig.messages.tts?.edge?.enabled ?? true,
     },
+  };
+}
+
+function ensurePeekabooSupport(nextConfig) {
+  nextConfig.skills ??= {};
+  const allowBundled = new Set(Array.isArray(nextConfig.skills.allowBundled) ? nextConfig.skills.allowBundled : []);
+  allowBundled.add("peekaboo");
+  nextConfig.skills.allowBundled = [...allowBundled];
+  nextConfig.skills.entries ??= {};
+  nextConfig.skills.entries.peekaboo = {
+    ...(nextConfig.skills.entries.peekaboo ?? {}),
+    enabled: nextConfig.skills.entries.peekaboo?.enabled ?? true,
   };
 }
 
@@ -322,6 +343,7 @@ async function main() {
   };
   nextConfig.messages.ackReactionScope ??= "group-mentions";
   ensureVoiceSupport(nextConfig);
+  ensurePeekabooSupport(nextConfig);
   ensureFeishuPlugin(nextConfig);
   nextConfig.channels ??= {};
   nextConfig.channels.feishu ??= {};

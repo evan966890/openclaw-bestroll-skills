@@ -82,6 +82,14 @@ Instruction:
 - 如果当前是 Feishu 会话，优先使用 `feishu-voice-reply`
 - 发送成功后返回 `NO_REPLY`
 
+Trigger: 用户说"做张图 / 出个海报 / 生成配图 / 给我一版视觉"
+
+Instruction:
+
+- 优先使用 `doubao-image-studio`
+- 默认先压成 1 段中文 prompt
+- 只在比例 / 风格 / 是否带字缺失时追问 1 次
+
 Trigger: 用户发来长文/截图/文件但没说清目的
 
 Instruction:
