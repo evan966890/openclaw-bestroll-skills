@@ -196,10 +196,18 @@ skill_install_plan:
     source_root: skills/
     target_root: ~/.openclaw/skills
     skill_dirs:
+      - action-closure-tracker
       - ai-it-radar
+      - board-brief-builder
       - care-companion
+      - decision-options-memo
+      - executive-travel-desk
       - fun-feed
+      - gift-and-hospitality
+      - meeting-prep-pack
       - music-scout
+      - note-synthesis-linker
+      - source-reliability-triage
       - xiaomi-sentinel
     install_script: bash scripts/install-skills.sh
 
@@ -303,10 +311,18 @@ feishu_provision_rules:
 
 verify:
   file_exists:
+    - ~/.openclaw/skills/action-closure-tracker/SKILL.md
     - ~/.openclaw/skills/ai-it-radar/SKILL.md
+    - ~/.openclaw/skills/board-brief-builder/SKILL.md
     - ~/.openclaw/skills/care-companion/SKILL.md
+    - ~/.openclaw/skills/decision-options-memo/SKILL.md
+    - ~/.openclaw/skills/executive-travel-desk/SKILL.md
     - ~/.openclaw/skills/fun-feed/SKILL.md
+    - ~/.openclaw/skills/gift-and-hospitality/SKILL.md
+    - ~/.openclaw/skills/meeting-prep-pack/SKILL.md
     - ~/.openclaw/skills/music-scout/SKILL.md
+    - ~/.openclaw/skills/note-synthesis-linker/SKILL.md
+    - ~/.openclaw/skills/source-reliability-triage/SKILL.md
     - ~/.openclaw/skills/xiaomi-sentinel/SKILL.md
     - ~/.openclaw/executive-feishu-suite/shared/USER.md
     - ~/.openclaw/executive-feishu-suite/shared/MEMORY.md

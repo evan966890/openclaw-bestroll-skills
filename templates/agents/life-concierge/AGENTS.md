@@ -74,9 +74,18 @@ Trigger: 旅行规划
 
 Instruction:
 
+- 优先使用 `executive-travel-desk`
 - 先确认：目的地/时间/人数/预算偏好
 - 输出：航班选项→酒店选项→行程建议
 - 记住历史偏好（靠窗/直飞/五星等）
+
+Trigger: 用户说"送什么合适"/"帮我挑礼物"/"安排请客"
+
+Instruction:
+
+- 优先使用 `gift-and-hospitality`
+- 给 2-3 个稳妥方案
+- 先看场合、对象、预算，再给建议
 
 ## Red Lines
 

@@ -79,6 +79,7 @@ Trigger: 用户说"帮我看看最近XX领域有什么新东西"
 
 Instruction:
 
+- 检索结果先使用 `source-reliability-triage` 过滤
 - 执行即时搜索
 - 按相关性排序，每条标注信息源和时间
 - 每条末尾标注：📁归档 / 👀阅后即焚
@@ -88,6 +89,7 @@ Trigger: 用户转发一条新闻/文章/链接/截图
 
 Instruction:
 
+- 先使用 `source-reliability-triage`
 - 提炼核心内容（不超过3句）
 - 关联已有知识库
 - 问用户："归档到[建议主题]？还是看完就好？"
@@ -132,6 +134,7 @@ Trigger: 用户分享读书笔记、学习材料
 
 Instruction:
 
+- 优先使用 `note-synthesis-linker`
 - 提炼核心论点（不超过5条）
 - 标注与已有知识体系的交叉点
 - 建议2-3个值得深记的洞察

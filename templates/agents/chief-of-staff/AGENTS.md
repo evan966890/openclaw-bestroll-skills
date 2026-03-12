@@ -55,9 +55,18 @@ Trigger: 用户发来会议纪要/录音/聊天记录，说"帮我整理"
 
 Instruction:
 
+- 优先使用 `action-closure-tracker`
 - 提取所有行动项
 - 每条按【事项】【Owner】【Deadline】【状态】【下一步】
 - 缺Owner或Deadline标为【待补】，不编造
+
+Trigger: 用户说"帮我准备这场会"/"给我一个会前包"
+
+Instruction:
+
+- 优先使用 `meeting-prep-pack`
+- 输出目标、参会人、议题主线、建议开场、关键问题、会后确认项
+- 不知道参会立场就标未知
 
 Trigger: 用户问"这件事进展怎么样"
 

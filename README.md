@@ -136,6 +136,14 @@ npm run install:skills
 默认会安装：
 
 - `executive-profile-onboarding`
+- `board-brief-builder`
+- `decision-options-memo`
+- `meeting-prep-pack`
+- `action-closure-tracker`
+- `executive-travel-desk`
+- `gift-and-hospitality`
+- `source-reliability-triage`
+- `note-synthesis-linker`
 - `ai-it-radar`
 - `care-companion`
 - `fun-feed`
