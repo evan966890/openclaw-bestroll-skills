@@ -8,7 +8,7 @@
     "provision:feishu": "node scripts/provision-feishu-bots.mjs",
     "configure:openclaw": "node scripts/configure-openclaw-suite.mjs",
     "setup:all": "node scripts/setup-suite.mjs",
-    "validate:skill": "node scripts/validate-skill.mjs templates/skills/executive-profile-onboarding",
+    "validate:skill": "node scripts/validate-skill.mjs templates/skills/executive-profile-onboarding templates/agents/second-brain/skills/interest-profiling skills/ai-it-radar skills/care-companion skills/fun-feed skills/music-scout skills/xiaomi-sentinel",
     "install:skills": "bash scripts/install-skills.sh"
   },
   "dependencies": {

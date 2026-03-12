@@ -35,58 +35,66 @@ function parseFrontmatter(content) {
 }
 
 async function main() {
-  const target = process.argv[2];
-  if (!target) {
-    throw new Error("Usage: node scripts/validate-skill.mjs <skill-dir>");
+  const targets = process.argv.slice(2);
+  if (!targets.length) {
+    throw new Error("Usage: node scripts/validate-skill.mjs <skill-dir> [more-skill-dirs...]");
   }
 
-  const skillDir = path.resolve(target);
-  const skillMdPath = path.join(skillDir, "SKILL.md");
-  if (!(await exists(skillMdPath))) {
-    throw new Error(`SKILL.md not found: ${skillMdPath}`);
-  }
-
-  const content = await fs.readFile(skillMdPath, "utf8");
-  const { frontmatter, body } = parseFrontmatter(content);
-  const errors = [];
-
-  if (!frontmatter) {
-    errors.push("Missing frontmatter block.");
-  } else {
-    if (!frontmatter.name) {
-      errors.push("Frontmatter missing `name`.");
+  let hasErrors = false;
+  for (const target of targets) {
+    const skillDir = path.resolve(target);
+    const skillMdPath = path.join(skillDir, "SKILL.md");
+    if (!(await exists(skillMdPath))) {
+      throw new Error(`SKILL.md not found: ${skillMdPath}`);
     }
-    if (!frontmatter.description) {
-      errors.push("Frontmatter missing `description`.");
-    }
-    if (/TODO/i.test(frontmatter.description)) {
-      errors.push("Frontmatter description still contains TODO.");
-    }
-  }
 
-  if (/TODO/i.test(body)) {
-    errors.push("SKILL.md body still contains TODO markers.");
-  }
+    const content = await fs.readFile(skillMdPath, "utf8");
+    const { frontmatter, body } = parseFrontmatter(content);
+    const errors = [];
 
-  const resourceRefs = [...body.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)].map((match) => match[2]);
-  for (const ref of resourceRefs) {
-    if (/^https?:/i.test(ref)) {
+    if (!frontmatter) {
+      errors.push("Missing frontmatter block.");
+    } else {
+      if (!frontmatter.name) {
+        errors.push("Frontmatter missing `name`.");
+      }
+      if (!frontmatter.description) {
+        errors.push("Frontmatter missing `description`.");
+      }
+      if (/TODO/i.test(frontmatter.description)) {
+        errors.push("Frontmatter description still contains TODO.");
+      }
+    }
+
+    if (/TODO/i.test(body)) {
+      errors.push("SKILL.md body still contains TODO markers.");
+    }
+
+    const resourceRefs = [...body.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)].map((match) => match[2]);
+    for (const ref of resourceRefs) {
+      if (/^https?:/i.test(ref)) {
+        continue;
+      }
+      const targetPath = path.resolve(skillDir, ref);
+      if (!(await exists(targetPath))) {
+        errors.push(`Referenced resource missing: ${ref}`);
+      }
+    }
+
+    if (errors.length) {
+      hasErrors = true;
+      for (const error of errors) {
+        console.error(`${skillDir}: ${error}`);
+      }
       continue;
     }
-    const targetPath = path.resolve(skillDir, ref);
-    if (!(await exists(targetPath))) {
-      errors.push(`Referenced resource missing: ${ref}`);
-    }
+
+    console.log(`Skill validation passed: ${skillDir}`);
   }
 
-  if (errors.length) {
-    for (const error of errors) {
-      console.error(`- ${error}`);
-    }
+  if (hasErrors) {
     process.exit(1);
   }
-
-  console.log(`Skill validation passed: ${skillDir}`);
 }
 
 await main();

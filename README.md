@@ -95,6 +95,7 @@ npm run configure:openclaw
 - 增量更新 `~/.openclaw/openclaw.json`
 - 为 4 个 Feishu account 建立 `bindings`
 - 为 second-brain 挂载 `radar/INTERESTS.md`
+- 非 `--dry-run` 情况下，需要真实可用的 `.state/feishu-accounts.json`，不会再写入占位凭证
 
 可选参数：
 

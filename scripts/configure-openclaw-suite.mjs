@@ -44,6 +44,39 @@ function defaultAccountsFallback() {
   };
 }
 
+function isPlaceholderAccount(account) {
+  return String(account?.appId || "").startsWith("cli_placeholder_")
+    || String(account?.appSecret || "").startsWith("placeholder_secret_");
+}
+
+function validateAccountsData(accountsData, accountsPath) {
+  if (!accountsData?.accounts) {
+    throw new Error(`Accounts file not found: ${accountsPath}`);
+  }
+
+  const errors = [];
+  for (const spec of AGENT_SPECS) {
+    const account = accountsData.accounts?.[spec.id];
+    if (!account) {
+      errors.push(`missing ${spec.id}`);
+      continue;
+    }
+    if (!account.appId || !account.appSecret) {
+      errors.push(`incomplete ${spec.id}`);
+      continue;
+    }
+    if (isPlaceholderAccount(account)) {
+      errors.push(`placeholder ${spec.id}`);
+    }
+  }
+
+  if (errors.length) {
+    throw new Error(
+      `Usable Feishu accounts are required before configure: ${errors.join(", ")}. Run npm run provision:feishu first or provide --accounts with real credentials.`,
+    );
+  }
+}
+
 function defaultOpenClawConfig() {
   return {
     auth: {},
@@ -135,7 +168,7 @@ async function installWorkspaceTemplates(repoRoot, suiteRoot, sharedRoot, args) 
       const sourcePath = path.join(sourceDir, entry.name);
       const targetPath = path.join(targetDir, entry.name);
       if (entry.isDirectory()) {
-        if (!(await fileExists(targetPath))) {
+        if (refreshPersona || !(await fileExists(targetPath))) {
           await copyDirRecursive(sourcePath, targetPath);
         }
         continue;
@@ -229,11 +262,12 @@ async function main() {
   const extraSkillInputs = parseCsvArg(args.extraSkills);
 
   const config = (await readJsonIfExists(configPath, null)) ?? defaultOpenClawConfig();
-  const accountsData = (await readJsonIfExists(accountsPath, dryRun ? defaultAccountsFallback() : null))
-    ?? defaultAccountsFallback();
+  const accountsData = dryRun
+    ? ((await readJsonIfExists(accountsPath, defaultAccountsFallback())) ?? defaultAccountsFallback())
+    : await readJsonIfExists(accountsPath, null);
 
-  if (!dryRun && !accountsData?.accounts) {
-    throw new Error(`Accounts file not found: ${accountsPath}`);
+  if (!dryRun) {
+    validateAccountsData(accountsData, accountsPath);
   }
 
   const sharedRoot = path.join(suiteRoot, "shared");
