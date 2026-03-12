@@ -33,6 +33,7 @@ const state = {
   drafts: {
     priority: "",
   },
+  errors: {},
   toast: "",
 };
 
@@ -64,6 +65,10 @@ function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.profile));
 }
 
+function text(value) {
+  return String(value ?? "").trim();
+}
+
 function setField(path, value, options = { render: true }) {
   const keys = path.split(".");
   let target = state.profile;
@@ -71,6 +76,9 @@ function setField(path, value, options = { render: true }) {
     target = target[keys.shift()];
   }
   target[keys[0]] = value;
+  if (state.errors[path] && text(value)) {
+    delete state.errors[path];
+  }
   persist();
   if (options.render) {
     render();
@@ -143,13 +151,18 @@ function copyText(text) {
 
 function field(label, path, placeholder = "", options = {}) {
   const value = path.split(".").reduce((acc, key) => acc?.[key], state.profile) ?? "";
+  const error = state.errors[path];
   return `
-    <label class="field">
-      <span>${label}</span>
+    <label class="field ${error ? "has-error" : ""}">
+      <div class="field-head">
+        <span>${label}</span>
+        ${options.required ? '<em class="required-pill">必填</em>' : ""}
+      </div>
       ${options.hint ? `<div class="hint">${options.hint}</div>` : ""}
       ${options.multiline
         ? `<textarea data-field="${path}" placeholder="${placeholder}">${escapeHtml(value)}</textarea>`
         : `<input type="text" data-field="${path}" value="${escapeHtml(value)}" placeholder="${placeholder}" />`}
+      ${error ? `<div class="error-text">${error}</div>` : ""}
     </label>
   `;
 }
@@ -187,8 +200,8 @@ function renderStepBody() {
     case 0:
       return `
         <div class="grid cols-2">
-          ${field("姓名", "basic.name", "请输入姓名")}
-          ${field("希望 AI 怎么称呼你", "basic.callName", "如：张总 / 三哥 / Sam")}
+          ${field("姓名", "basic.name", "请输入姓名", { required: true })}
+          ${field("希望 AI 怎么称呼你", "basic.callName", "如：张总 / 三哥 / Sam", { required: true })}
           ${field("职位", "basic.title", "默认：总经理", { hint: "可跳过，默认值已预置为“总经理”" })}
           ${field("所在部门", "basic.department", "如：国际业务部")}
         </div>
@@ -304,6 +317,43 @@ function renderStepBody() {
   }
 }
 
+function validateCurrentStep() {
+  if (state.currentStep !== 0) {
+    state.errors = {};
+    return true;
+  }
+
+  const nextErrors = {};
+  if (!text(state.profile.basic.name)) {
+    nextErrors["basic.name"] = "姓名必填";
+  }
+  if (!text(state.profile.basic.callName)) {
+    nextErrors["basic.callName"] = "称呼必填";
+  }
+  state.errors = nextErrors;
+
+  if (Object.keys(nextErrors).length) {
+    state.toast = "请先补全姓名和称呼";
+    setTimeout(() => {
+      if (state.toast === "请先补全姓名和称呼") {
+        state.toast = "";
+        render();
+      }
+    }, 1800);
+    return false;
+  }
+
+  return true;
+}
+
+function focusFirstError() {
+  const firstPath = Object.keys(state.errors)[0];
+  if (!firstPath) return;
+  requestAnimationFrame(() => {
+    document.querySelector(`[data-field="${firstPath}"]`)?.focus();
+  });
+}
+
 function render() {
   const root = document.querySelector("#app");
   const current = steps[state.currentStep];
@@ -398,6 +448,11 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (target.dataset.nav === "next") {
+    if (!validateCurrentStep()) {
+      render();
+      focusFirstError();
+      return;
+    }
     state.currentStep = Math.min(steps.length - 1, state.currentStep + 1);
     render();
     return;
@@ -438,6 +493,7 @@ document.addEventListener("click", (event) => {
     state.currentStep = 0;
     state.previewTab = "USER.md";
     state.drafts.priority = "";
+    state.errors = {};
     persist();
     render();
   }

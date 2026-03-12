@@ -30,11 +30,16 @@
 
 ## 前置要求
 
-- macOS
+- Windows / macOS / Linux
 - Node.js 20+
 - Chrome / Edge / Brave / Chromium 之一
-- 已安装 ClawMom / OpenClaw，并存在 `~/.openclaw/openclaw.json`
+- 已安装 ClawMom / OpenClaw
 - 当前机器可登录飞书开放平台
+
+说明：
+
+- 如果 `~/.openclaw/openclaw.json` 不存在，配置脚本会自动创建最小可用配置
+- 如果本地已经有完整的 `.state/feishu-accounts.json`，可以跳过飞书 provisioning
 
 ## 快速开始
 
@@ -63,6 +68,7 @@ npm run provision:feishu
 - 若发现旧的 `OpenClaw xxx` 遗留应用，会直接中止，避免继续堆重复项
 - 首次运行会打开浏览器并等待你扫码登录飞书开放平台
 - 结果默认写入 `.state/feishu-accounts.json`
+- 如果当前机器已经有可用的 `.state/feishu-accounts.json`，这一步不是必须
 
 常用参数：
 
@@ -111,6 +117,13 @@ npm run setup:all
 1. 创建 4 个飞书应用
 2. 安装 suite 到 `~/.openclaw`
 3. 写入共享画像与 4 个 agent 模板
+4. 安装仓库内置的 5 个额外 skills
+
+如果当前机器已经有可复用的 `.state/feishu-accounts.json`，可以执行：
+
+```bash
+npm run setup:all -- --skip-provision
+```
 
 ## 安装仓库内置技能
 

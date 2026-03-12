@@ -44,14 +44,16 @@ host_assumptions:
 
 execution_order:
   - npm install
-  - npm run provision:feishu
+  - if .state/feishu-accounts.json missing_or_incomplete then npm run provision:feishu
   - npm run configure:openclaw
+  - bash scripts/install-skills.sh
 
 commands:
   default:
     install_deps: npm install
-    provision_feishu: npm run provision:feishu
+    provision_feishu_if_needed: npm run provision:feishu
     configure_suite: npm run configure:openclaw
+    install_bundled_skills: bash scripts/install-skills.sh
   with_profile_json:
     configure_suite: npm run configure:openclaw -- --profile-json /abs/path/to/profile.json
   with_extra_skills:
@@ -325,3 +327,7 @@ verify:
       needle: "我是生活助理。先用几组简短问题完成共享画像初始化"
     - path: ~/.openclaw/executive-feishu-suite/agents/second-brain/BOOTSTRAP.md
       needle: "我是知识管家。先用几组简短问题完成共享画像初始化"
+  conditional_file_exists:
+    when: ".state/feishu-accounts.json exists or provision step executed"
+    paths:
+      - ./.state/feishu-accounts.json

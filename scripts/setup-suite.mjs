@@ -23,9 +23,26 @@ async function runStep(scriptName, argv) {
   });
 }
 
+async function runShellStep(command, argv = []) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, argv, {
+      stdio: "inherit",
+    });
+    child.on("exit", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      reject(new Error(`${command} exited with code ${code}`));
+    });
+    child.on("error", reject);
+  });
+}
+
 async function main() {
   const rawArgs = process.argv.slice(2);
   const args = parseArgs(rawArgs);
+  const dryRun = Boolean(args.dryRun);
 
   if (!args.skipProvision) {
     await runStep("provision-feishu-bots.mjs", rawArgs);
@@ -33,6 +50,15 @@ async function main() {
 
   if (!args.skipConfigure) {
     await runStep("configure-openclaw-suite.mjs", rawArgs);
+  }
+
+  if (!args.skipSkillInstall) {
+    const repoRoot = repoRootFromImport(import.meta.url);
+    if (dryRun) {
+      console.log(`[dry-run] bash ${path.join(repoRoot, "scripts", "install-skills.sh")}`);
+      return;
+    }
+    await runShellStep("bash", [path.join(repoRoot, "scripts", "install-skills.sh")]);
   }
 }
 

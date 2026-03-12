@@ -4,6 +4,7 @@ READ_ORDER:
   - ./README.md
   - ./scripts/configure-openclaw-suite.mjs
   - ./scripts/provision-feishu-bots.mjs
+  - ./scripts/install-skills.sh
 
 EXECUTION_MODE: DO_NOT_CHAT_DO_NOT_DESIGN_RUN_SPEC
 
@@ -15,6 +16,8 @@ PRIMARY_RULES:
   - do_not_skip_bootstrap_greetings
   - do_not_skip_skill_install
   - if ~/.openclaw/openclaw.json missing create_minimal_then_continue
+  - if ./.state/feishu-accounts.json missing_or_incomplete run provision
+  - if ./.state/feishu-accounts.json already_complete reuse_it_and_skip_provision
 
 SUCCESS_CONDITION:
   - four_agents_installed
@@ -26,7 +29,7 @@ SUCCESS_CONDITION:
 
 RUN:
   - npm install
-  - npm run provision:feishu
+  - if ./.state/feishu-accounts.json missing_or_incomplete: npm run provision:feishu
   - npm run configure:openclaw
   - bash scripts/install-skills.sh
 
@@ -37,4 +40,4 @@ OPTIONAL_FLAGS:
 VERIFY:
   - inspect files listed in AI_SPEC.yaml.verify
   - inspect ~/.openclaw/openclaw.json mutations listed in AI_SPEC.yaml.openclaw_config_rules
-  - inspect ./.state/feishu-accounts.json for four accounts
+  - if provision_executed_or_accounts_file_exists inspect ./.state/feishu-accounts.json for four accounts

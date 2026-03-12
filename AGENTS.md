@@ -13,8 +13,9 @@ This repo provisions a four-agent OpenClaw executive assistant suite for Feishu:
 
 1. Update templates under `templates/` and shared markdown under `shared-profile/`.
 2. Keep markdown generation logic in `lib/profile-renderer.mjs`.
-3. Use `npm run provision:feishu` to create Feishu apps.
+3. If `.state/feishu-accounts.json` is missing or incomplete, use `npm run provision:feishu` to create or reconcile Feishu apps.
 4. Use `npm run configure:openclaw` to install the suite into `~/.openclaw`.
+5. Use `bash scripts/install-skills.sh` when bundled repo skills must also be installed.
 
 ## Editing Notes
 
